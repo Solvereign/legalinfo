@@ -15,6 +15,62 @@ const getRep = (node) => {
 			return '!!!';
 	}
 }
+export const capitalizeFirstLetter = (str) => {
+	if ( str.length === 0) return str;
+	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+export const BoldDivider = () => {
+	return (
+		<Divider
+			sx={{
+				borderBottomWidth: 1,
+				borderColor: 'black',
+			}}
+		/>
+	);
+};
+const colors = new Map([
+	['хууль', '#94ac00'],
+	['төрөл', '#dccbf5'],
+	['заалт', '#9cdeff'],
+	['зүйл', '#a7a4db'],
+	['томьёо', '#f4dba9'],
+]);
+export const isZuilZaalt = (node) => {
+	return ['зүйл', 'заалт'].includes(node.label.toLowerCase());
+}
+
+export const minimizeGraph = (graph) => {
+	let miniNodes = [];
+	let miniRel = [];
+	graph.nodes.forEach(node => {
+		if (!isZuilZaalt(node)) {
+			miniNodes.push(node);
+		}
+	});
+	graph.rels.forEach(rel => {
+		const startNode = graph.nodes.get(rel.startId);
+		const endNode = graph.nodes.get(rel.endId);
+		const newNodeIds = [startNode, endNode].map(node => {
+			if (isZuilZaalt(node)) {
+				const huuliId = node.properties['хууль'];
+				const parent = miniNodes.filter((node) => (node.label.toLowerCase() === 'хууль' && node.properties['дугаар'] === huuliId));
+				return parent.length !== 0 ? parent[0].elmId : 0;
+			}
+			else return node.elmId;
+		});
+		if (newNodeIds[0] !== newNodeIds[1] && newNodeIds[0] * newNodeIds[1] !== 0) {
+			miniRel.push({
+				elmId: rel.elmId,
+				startId: newNodeIds[0],
+				endId: newNodeIds[1],
+				type: rel.type
+			})
+		}
+	})
+	return graphMapToList({ nodes: miniNodes, rels: miniRel });
+}
+
 export const graphMapToList = (graph) => {
 	const nodeList = [];
 	const relList = [];
@@ -37,54 +93,14 @@ export const graphMapToList = (graph) => {
 		nodeList.push({
 			id: node.elmId,
 			size: 40 + (nodeCountMap.has(node.elmId) ? nodeCountMap.get(node.elmId) * 2 : 0),
-			// captions: [{styles: "bold", value: node.label}, {styles:"", value: getRep(node)}], 
 			captions: [{ styles: "", value: getRep(node) }],
 			color: node.color
 		})
-
 	});
 
 	return { nodes: nodeList, rels: relList };
 }
-export const minimizeGraph = (graph) => {
-	let miniNodes = [];
-	let miniRel = [];
-	graph.nodes.forEach(node => {
-		if (!isZuilZaalt(node)) {
-			miniNodes.push(node);
-		}
-	});
-	graph.rels.forEach(rel => {
-		const startNode = graph.nodes.get(rel.startId);
-		const endNode = graph.nodes.get(rel.endId);
-		const newNodeIds = [startNode, endNode].map(node => {
-			if (isZuilZaalt(node)) {
-			// if (['зүйл', 'заалт'].includes(node.label.toLowerCase())) {
-				const huuliId = node.properties['хууль'];
-				const parent = miniNodes.filter((node) => (node.label.toLowerCase() === 'хууль' && node.properties['дугаар'] === huuliId));
-				return parent.length !== 0 ? parent[0].elmId : 0;
-			}
-			else return node.elmId;
-		});
-		if (newNodeIds[0] !== newNodeIds[1] && newNodeIds[0] * newNodeIds[1] !== 0) {
-			miniRel.push({
-				elmId: rel.elmId,
-				startId: newNodeIds[0],
-				endId: newNodeIds[1],
-				type: rel.type
-			})
-		}
-	})
-	return graphMapToList({ nodes: miniNodes, rels: miniRel });
-}
 
-const colors = new Map([
-	['хууль', '#94ac00'],
-	['төрөл', '#dccbf5'],
-	['заалт', '#9cdeff'],
-	['зүйл', '#a7a4db'],
-	['томьёо', '#f4dba9'],
-]);
 
 export const normalizeNode = (node) => {
 	const label = node.labels[0].toLowerCase();
@@ -113,14 +129,12 @@ export const normalizeNode = (node) => {
 	const np = {};
 	Object.entries(properties).forEach(([key, val]) => {
 		if (val.low) {
-			// np[key] = (val.high * Math.pow(2, 32)) + val.low;
 			// eslint-disable-next-line no-undef
 			const adjustedLow = val.low < 0 ? (val.low + Math.pow(2, 32)) : val.low;
 			// eslint-disable-next-line no-undef
 			np[key] = (BigInt(val.high) << 32n) + BigInt(adjustedLow);
 		} else { np[key] = val }
 	})
-
 	return {
 		elmId: elmId,
 		id: id,
@@ -128,8 +142,6 @@ export const normalizeNode = (node) => {
 		color: color,
 		properties: np
 	};
-
-
 }
 
 export const normalizeRel = (rel) => {
@@ -141,20 +153,6 @@ export const normalizeRel = (rel) => {
 		properties: rel.properties
 	};
 }
-export const capitalizeFirstLetter = (str) => {
-	if ( str.length === 0) return str;
-	return str.charAt(0).toUpperCase() + str.slice(1);
-}
-export const BoldDivider = () => {
-	return (
-		<Divider
-			sx={{
-				borderBottomWidth: 1,
-				borderColor: 'black',
-			}}
-		/>
-	);
-};
 
 export const expandGraph = (original, additional) => {
 	const tmp = { ...original }
@@ -179,7 +177,6 @@ export const getNodesRels = (obj) => {
 		obj.forEach((elm) => {
 			if (elm.elementId) { items.push(elm) }
 			// else if(Array.isArray(elm)) {items.push(...getNodesRels(elm));}
-
 			else { items.push(...getNodesRels(elm)); }
 		});
 	}
@@ -191,8 +188,4 @@ export const getNodesRels = (obj) => {
 		return [];
 	}
 	return items;
-}
-
-export const isZuilZaalt = (node) => {
-	return ['зүйл', 'заалт'].includes(node.label.toLowerCase());
 }

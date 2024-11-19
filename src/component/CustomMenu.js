@@ -22,7 +22,7 @@ const CustomMenu = ({
 			anchorPosition={menu.pos}
 		>
 			{isZuilZaalt(menu.node) &&
-				<MenuItem onClick={() => { handleClose('parent') }} >Эцэг хуулийг олох</MenuItem>
+				<MenuItem onClick={() => { handleClose('parent') }} >Хуулийг харах</MenuItem>
 			}
 			{menu.node.label.toLowerCase() === 'хууль' &&
 				<MenuItem onClick={() => { handleClose('lawparent') }} >Дурдсан хуулиудыг харах</MenuItem>

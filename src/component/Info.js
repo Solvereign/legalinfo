@@ -15,7 +15,7 @@ const Info = ({
 		}
 		else {
 			const rel = activeItem[0];
-			return (<List>
+			return (<List sx={{maxHeight: '100vh'}}>
 				<ListItem key={'turul'}>
 					<ListItemText primary="Холбоос" />
 					<ListItemText secondary={rel.type} />
