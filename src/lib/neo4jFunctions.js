@@ -14,7 +14,6 @@ export const runQuery = async (query) => {
 	const session = driver.session();
 	try{
 		const result = await session.run(query);
-		// console.log(result);
 		const nodeMap = new Map();
 		const relMap = new Map();
 		const items = [];

@@ -15,12 +15,12 @@ const Info = ({
 		}
 		else {
 			const rel = activeItem[0];
-			return (<List sx={{maxHeight: '100vh'}}>
+			return (<List sx={{ maxHeight: '100vh' }}>
 				<ListItem key={'turul'}>
 					<ListItemText primary="Холбоос" />
 					<ListItemText secondary={rel.type} />
 				</ListItem>
-				{objList(rel.properties) }
+				{objList(rel.properties)}
 				<BoldDivider />
 				<ListItem key={'desc'}>
 					<ListItemText secondary='Дараах 2 оройг холбосон.' />
@@ -34,27 +34,47 @@ const Info = ({
 		// return activeItem;
 	}
 
-	const objList = (obj, n=1) => {
+	const objList = (obj, n = 1) => {
+		const propList = ['нэр', 'төрөл','нэршил','хууль', 'дугаар', 'гарчиг',  'агуулга', 'баталсан', 'хэрэгжсэн', 'утга' ];
+		
 		return (
 			<>
-			{Object.entries(obj).map(([key, val], index) => {
-				return (<>
-					<Divider />
-					<ListItem key={n + key} sx={{display:'flex', justifyContent:'space-between' }}>
-						<ListItemText
-							primary={capitalizeFirstLetter(key)}
-							sx={{flex: 4}}
-						// sx={{ width: 50 }}
-						/>
-						<ListItemText
-							secondary={(['number', 'bigint'].includes(typeof val)) ? val.toString() : val.year ? `${val.year.low}-${val.month.low}-${val.day.low}` : capitalizeFirstLetter(val)}
-	
-							// sx={{ marginLeft: val.length && val.length > 20 ? 8 : 0 }}
-							sx={{ flex: 11, textAlign: 'left' }}
-						/>
+			{
+				propList.filter((elm) => obj.hasOwnProperty(elm)).map( (key) => {
+					const val = obj[key];
+					return (<>
+					<Divider/>
+					<ListItem key={n + key} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+					<ListItemText
+								primary={capitalizeFirstLetter(key)}
+								sx={{ flex: 4 }}
+							/>
+							<ListItemText
+								secondary={(['number', 'bigint'].includes(typeof val)) ? val.toString() : val.year ? `${val.year.low}-${val.month.low}-${val.day.low}` : capitalizeFirstLetter(val)}
+								sx={{ flex: 11, textAlign: 'left' }}
+							/>
 					</ListItem>
-				</>)
-			})}
+					</>)
+				})
+			}
+				{/* {Object.entries(obj).map(([key, val], index) => {
+					return (<>
+						<Divider />
+						<ListItem key={n + key} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+							<ListItemText
+								primary={capitalizeFirstLetter(key)}
+								sx={{ flex: 4 }}
+							// sx={{ width: 50 }}
+							/>
+							<ListItemText
+								secondary={(['number', 'bigint'].includes(typeof val)) ? val.toString() : val.year ? `${val.year.low}-${val.month.low}-${val.day.low}` : capitalizeFirstLetter(val)}
+
+								// sx={{ marginLeft: val.length && val.length > 20 ? 8 : 0 }}
+								sx={{ flex: 11, textAlign: 'left' }}
+							/>
+						</ListItem>
+					</>)
+				})} */}
 			</>
 
 		);
@@ -70,7 +90,7 @@ const Info = ({
 					/> */}
 					<ListItemText
 						primary={node.label}
-						// sx={{ marginLeft: 0 }}
+					// sx={{ marginLeft: 0 }}
 					/>
 
 				</ListItem>

@@ -16,12 +16,20 @@ const sentenceQuery = [
 		"query": "MATCH (z)-[r]->(n:Хууль {нэр: '{{name}} хууль' }) WITH z, z.хууль AS relatedLaw, collect(r) as rels, n MATCH p = shortestPath((n1:Хууль {дугаар: relatedLaw})-[*]->(z)) RETURN z, n1, p, rels, n"
 	},
 	{
+		"sentence": "{{name}}... хуулийг дурдсан хуулиудыг харуул",
+		"query": "MATCH (z)-[r]->(n:Хууль ) WHERE n.нэр STARTS WITH '{{name}}' WITH z, z.хууль AS relatedLaw, collect(r) as rels, n MATCH p = shortestPath((n1:Хууль {дугаар: relatedLaw})-[*]->(z)) RETURN z, n1, p, rels, n"
+	},
+	{
 		"sentence": "{{num}} дугаартай хуулийг бүхэлд нь харуул",
 		"query": "MATCH (l:Хууль {дугаар: {{num}} })-[r1]->(z1:Зүйл) OPTIONAL MATCH (z1)-[r2:БАГТААСАН*1..5]->(z2:Заалт) RETURN l, r1, z1, collect(z2) AS nodes, collect(r2) AS relationships"
 	},
 	{
 		"sentence": "{{name}} хуулийг бүхэлд нь харуул",
 		"query": "MATCH (l:Хууль {нэр: '{{name}} хууль' })-[r1]->(z1:Зүйл) OPTIONAL MATCH (z1)-[r2:БАГТААСАН*1..5]->(z2:Заалт) RETURN l, r1, z1, collect(z2) AS nodes, collect(r2) AS relationships"
+	},
+	{
+		"sentence": "{{name}}-",
+		"query": "MATCH (l:Хууль )-[r1]->(z1:Зүйл) WHERE l.нэр STARTS WITH '{{name}}' OPTIONAL MATCH (z1)-[r2:БАГТААСАН*1..5]->(z2:Заалт) RETURN l, r1, z1, collect(z2) AS nodes, collect(r2) AS relationships"
 	},
 	{
 		"sentence": "{{num}} дугаартай хуулийг харуул",
@@ -54,8 +62,8 @@ export const sentenceToCypher = (str) => {
 
     for (let item of sentenceQuery) {
         const matches = inputSentence.match(new RegExp(item.sentence.replace(/{{\w+}}/g, '(.*?)')));
-
         if (matches) {
+			console.log(matches);
             const extractedValues = {};
             const placeholderMatches = item.sentence.match(/{{(\w+)}}/g);
 
@@ -63,6 +71,7 @@ export const sentenceToCypher = (str) => {
                 placeholderMatches.forEach((placeholder, index) => {
                     const key = placeholder.replace(/[{{}}]/g, ''); 
                     extractedValues[key] = matches[index + 1];
+					console.log(matches[index+1])
                 });
             }
 
@@ -77,19 +86,6 @@ export const sentenceToCypher = (str) => {
 
     return inputSentence;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
