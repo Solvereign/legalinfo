@@ -34,73 +34,62 @@ const Info = ({
 		// return activeItem;
 	}
 
-	const objList = (obj, n = 1) => {
-		const propList = ['нэр', 'төрөл','нэршил','хууль', 'дугаар', 'гарчиг',  'агуулга', 'баталсан', 'хэрэгжсэн', 'утга' ];
-		
+	const objList = (obj, label = '', n = 1) => {
+		label=label.toLowerCase();
+		const propList = ['нэр', 'төрөл', 'нэршил', 'хууль', 'дугаар', 'гарчиг', 'агуулга', 'баталсан', 'хэрэгжсэн', 'утга'];
+		const formatValue = (val) => {
+			if (['number', 'bigint'].includes(typeof val)) return val.toString();
+			if (val.year && val.month && val.day) return `${val.year.low}-${val.month.low}-${val.day.low}`;
+			return capitalizeFirstLetter(val);
+		};
+
+		const getListItem = (key, val) => {
+			const isLawLink = key === 'хууль' || ((label==='хууль') && key === 'дугаар');
+			const href = isLawLink ? `https://legalinfo.mn/mn/detail?lawId=${val}` : null;
+
+			return (
+				<ListItem
+					key={n + key}
+					sx={{ display: 'flex', justifyContent: 'space-between', color:'black' , textDecoration: href ? 'underline' : 'none', }}
+					component={href ? 'a' : 'div'}
+					href={href}
+					target={href ? '_blank' : undefined}
+				>
+					<ListItemText primary={capitalizeFirstLetter(key)} sx={{ flex: 4 }} />
+					<ListItemText secondary={formatValue(val)} sx={{ flex: 11, textAlign: 'left' }} />
+				</ListItem>
+			);
+		};
+
 		return (
 			<>
-			{
-				propList.filter((elm) => obj.hasOwnProperty(elm)).map( (key) => {
-					const val = obj[key];
-					return (<>
-					<Divider/>
-					<ListItem key={n + key} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-					<ListItemText
-								primary={capitalizeFirstLetter(key)}
-								sx={{ flex: 4 }}
-							/>
-							<ListItemText
-								secondary={(['number', 'bigint'].includes(typeof val)) ? val.toString() : val.year ? `${val.year.low}-${val.month.low}-${val.day.low}` : capitalizeFirstLetter(val)}
-								sx={{ flex: 11, textAlign: 'left' }}
-							/>
-					</ListItem>
-					</>)
-				})
-			}
-				{/* {Object.entries(obj).map(([key, val], index) => {
-					return (<>
-						<Divider />
-						<ListItem key={n + key} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-							<ListItemText
-								primary={capitalizeFirstLetter(key)}
-								sx={{ flex: 4 }}
-							// sx={{ width: 50 }}
-							/>
-							<ListItemText
-								secondary={(['number', 'bigint'].includes(typeof val)) ? val.toString() : val.year ? `${val.year.low}-${val.month.low}-${val.day.low}` : capitalizeFirstLetter(val)}
-
-								// sx={{ marginLeft: val.length && val.length > 20 ? 8 : 0 }}
-								sx={{ flex: 11, textAlign: 'left' }}
-							/>
-						</ListItem>
-					</>)
-				})} */}
+				{propList
+					.filter((elm) => obj.hasOwnProperty(elm))
+					.map((key) => (
+						<React.Fragment key={n + key}>
+							<Divider />
+							{getListItem(key, obj[key])}
+						</React.Fragment>
+					))}
 			</>
-
 		);
 	}
+
 
 	const nodeInfo = (node, n = 1) => {
 		return (
 			<>
 				<ListItem key={'turul'}>
-					{/* <ListItemText
-						primary='Оройн төрөл'
-						sx={{ marginRight: -1 }}
-					/> */}
 					<ListItemText
 						primary={node.label}
-					// sx={{ marginLeft: 0 }}
 					/>
 
 				</ListItem>
-				{objList(node.properties, n)}
+				{objList(node.properties, node.label, n)}
 			</>
 		)
 	}
 
-
-	// processItem();
 	return (
 		activeItem ?
 			<Paper elevation={3} sx={{ position: "absolute", right: 0, top: 0, width: 400, padding: 2 }}>
@@ -110,13 +99,4 @@ const Info = ({
 	);
 }
 
-/*
-songogdson node/relationship-n medeelliig haruuldag baina.
-
- - expand: uur luu ni zaasan relationship, node-g query yvuulj haruulna
- 
- 
- https://github.com/neo4j-examples/movies-javascript-bolt/blob/main/src/neo4jApi.js
- https://neo4j.com/docs/javascript-manual/current/query-simple/
-*/
 export default Info;

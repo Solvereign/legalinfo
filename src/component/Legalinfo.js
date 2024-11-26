@@ -26,7 +26,6 @@ const Legalinfo = () => {
 			setItem([graph.nodes.get(node.id)]);
 			// nvlRef.current?.updateElementsInGraph([{id: node.id, selected: true}])
 		},
-		//   console.log('onNodeClick', node, hitTargets, evt),
 		onNodeRightClick: (node, hitTargets, evt) => {
 			console.log('onNodeRightClick', node, hitTargets, evt)
 			setMenuNode({
