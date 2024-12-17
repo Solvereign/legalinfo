@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { InteractiveNvlWrapper } from '@neo4j-nvl/react';
 import Info from './Info.js';
-import { graphMapToList, minimizeGraph, expandGraph } from '../lib/functions.js';
+import { graphMapToList, minimizeGraph, expandGraph, removeFromGraph } from '../lib/functions.js';
 import Controller from './Controller.js';
 import { runQuery } from '../lib/neo4jFunctions.js';
 import { SnackbarProvider, useSnackbar } from 'notistack';
@@ -27,7 +27,7 @@ const Legalinfo = () => {
 			// nvlRef.current?.updateElementsInGraph([{id: node.id, selected: true}])
 		},
 		onNodeRightClick: (node, hitTargets, evt) => {
-			console.log('onNodeRightClick', node, hitTargets, evt)
+			// console.log('onNodeRightClick', node, hitTargets, evt)
 			setMenuNode({
 				node: graph.nodes.get(node.id),
 				pos: {
@@ -49,7 +49,7 @@ const Legalinfo = () => {
 		onCanvasClick: (evt) => setItem(null),
 		// onCanvasDoubleClick: (evt) => console.log('onCanvasDoubleClick', evt),
 		// onCanvasRightClick: (evt) => console.log('onCanvasRightClick', evt),
-		onDrag: (nodes) => console.log('onDrag', nodes),
+		onDrag: (nodes) => {},
 		onPan: (evt) => { },
 		onZoom: (zoomLevel) => console.log('onZoom', zoomLevel)
 	}
@@ -89,6 +89,12 @@ const Legalinfo = () => {
 
 	}
 
+	const remove = (node, type) => {
+		const newGraph = removeFromGraph(graph, node, type);
+		console.log(newGraph);
+		setGraph(newGraph);
+	}
+
 
 	// hamgiin ehend ymar 1 query unshuulchihsan jisheetai baih heregtei.
 	useEffect(() => {
@@ -114,6 +120,7 @@ const Legalinfo = () => {
 					menu={menuNode}
 					setMenu={setMenuNode}
 					runQuery={queryResult}
+					remove={remove}
 				/>}
 				{showGraph && <InteractiveNvlWrapper nodes={showGraph['nodes']} rels={showGraph['rels']} mouseEventCallbacks={mouseEventCallbacks} ref={nvlRef} />}
 				<Info

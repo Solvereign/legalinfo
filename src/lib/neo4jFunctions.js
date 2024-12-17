@@ -31,22 +31,6 @@ export const runQuery = async (query) => {
 					
 				}
 			})
-			// console.log("++", keys);
-			// keys.forEach(key => {
-			// 	const value = record.get(key);
-			// 	console.log(value);
-			// 	if(value) {
-
-			// 		// console.log("--",key, value)
-			// 		if(value.labels) { // node
-			// 			const node = normalizeNode(value);
-			// 			nodeMap.set(node.elmId, node);
-			// 		} else { // rel
-			// 			const rel = normalizeRel(value);
-			// 			relMap.set(rel.elmId, rel);
-			// 		}
-			// 	}
-			// })
 		});
 
 		items.forEach((value) => {

@@ -19,7 +19,7 @@ const CustomInput = ({ obj, setCypher }) => {
 	useEffect(() => {
 		let newCypher = obj.query;
 		Object.entries(queryInput).forEach( ([key, val]) => {
-			newCypher = newCypher.replace(`{{${key}}}`, val);
+			newCypher = newCypher.replace(`{{${key}}}`, val?.trim()?.toLowerCase());
 		})
 		setCypher(newCypher);
 	}, [queryInput])

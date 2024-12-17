@@ -1,15 +1,16 @@
 import React from 'react';
-import { Menu, MenuItem } from '@mui/material';
+import { Divider, Menu, MenuItem } from '@mui/material';
 import { expandNodeQueryString } from '../lib/neo4jFunctions';
-import { isZuilZaalt } from '../lib/functions';
+import { BoldDivider, isZuilZaalt } from '../lib/functions';
 
 const CustomMenu = ({
-	menu, setMenu, runQuery
+	menu, setMenu, runQuery, remove
 }) => {
 
 	const handleClose = (type = null) => {
 		if (type) {
-			runQuery(expandNodeQueryString({ ...menu.node }, type), true);
+			if(type.startsWith('remove')) remove(menu.node, type); 
+			else runQuery(expandNodeQueryString({ ...menu.node }, type), true);
 		}
 		setMenu(null)
 	};
@@ -22,14 +23,23 @@ const CustomMenu = ({
 			anchorPosition={menu.pos}
 		>
 			{isZuilZaalt(menu.node) &&
-				<MenuItem onClick={() => { handleClose('parent') }} >Хуулийг харах</MenuItem>
+				[<MenuItem onClick={() => { handleClose('parent') }} key='parentLaw' >Хуулийг харах</MenuItem>,
+				<BoldDivider key={'divider-cond'} sx={{margin: '1px !important'}}/>]
+
 			}
 			{menu.node.label.toLowerCase() === 'хууль' &&
-				<MenuItem onClick={() => { handleClose('lawparent') }} >Дурдсан хуулиудыг харах</MenuItem>
+				[<MenuItem onClick={() => { handleClose('lawparent') }} key='seeReferences' >Дурдсан хуулиудыг харах</MenuItem>,
+				<BoldDivider key={'divider-cond'} sx={{margin: '1px !important'}}/>]
 			}
-			<MenuItem onClick={() => { handleClose('both') }}>Тэлэх</MenuItem>
-			<MenuItem onClick={() => { handleClose('coming') }}>Орох холбоо</MenuItem>
-			<MenuItem onClick={() => { handleClose('going') }}>Гарах холбоо</MenuItem>
+			<MenuItem onClick={() => { handleClose('remove') }} key='remove'>Хасах</MenuItem>
+			<Divider key={'divider-1'} sx={{margin: '1px !important'}}/>
+			<MenuItem onClick={() => { handleClose('removeChild') }} key='removeAll'>Зүйл, заалттай хасах</MenuItem>
+			<BoldDivider key={'divider-2'} sx={{margin: '1px !important'}}/>
+			<MenuItem onClick={() => { handleClose('both') }} key='expand'>Тэлэх</MenuItem>
+			<Divider key={'divider-3'} sx={{margin: '1px !important'}}/>
+			<MenuItem onClick={() => { handleClose('coming') }} key={'incoming'} >Орох холбоо</MenuItem>
+			<Divider key={'divider-4'} sx={{margin: '1px !important'}}/>
+			<MenuItem onClick={() => { handleClose('going') }} key='outgoing' >Гарах холбоо</MenuItem>
 		</Menu>
 	);
 }

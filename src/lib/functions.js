@@ -19,10 +19,11 @@ export const capitalizeFirstLetter = (str) => {
 	if ( str.length === 0) return str;
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
-export const BoldDivider = () => {
+export const BoldDivider = ({sx}) => {
 	return (
 		<Divider
 			sx={{
+				...sx,
 				borderBottomWidth: 1,
 				borderColor: 'black',
 			}}
@@ -166,6 +167,30 @@ export const expandGraph = (original, additional) => {
 			tmp.rels.set(rel.elmId, rel);
 		}
 	})
+	return tmp;
+}
+
+export const removeFromGraph = (original, node, type = 'remove') => {
+	console.log(node, type);
+	let tmp = { ...original }
+	tmp.nodes.delete(node.elmId);
+	const childNodes = [];
+	tmp.rels.forEach((rel) => {
+		if(rel.startId === node.elmId) {
+			// huuhduud ni gesen ug
+			if(['БАГТААСАН', 'АГУУЛСАН'].includes(rel.type)) {
+				childNodes.push({elmId: rel.endId});
+			}
+			tmp.rels.delete(rel.elmId);
+		} else if(rel.endId === node.elmId) {
+			tmp.rels.delete(rel.elmId);
+		}
+	});
+	if(type === 'removeChild'){
+		for( const elm of childNodes ) {
+			tmp = removeFromGraph(tmp, elm, type);
+		}
+	}
 	return tmp;
 }
 
